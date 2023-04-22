@@ -3,6 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from .models import Job
+
 
 
 def register_form(request):
@@ -45,5 +47,8 @@ def logout_form(request):
 @login_required
 def home(request):
     username = request.user.username
-    context = {"username": username}
+    user_jobs = Job.objects.filter(applicant=request.user.id)
+    print(user_jobs)
+    context = {"username": username, "user_jobs": user_jobs}
+    
     return render(request, "home.html", context=context)
