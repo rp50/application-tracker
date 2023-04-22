@@ -14,7 +14,7 @@ def register_form(request):
             return redirect("/")
     form = UserCreationForm()
     context = {"form": form, "form_title": "Register"}
-    return render(request=request, template_name="form.html", context=context)
+    return render(request=request, template_name="register.html", context=context)
 
 
 def login_form(request):
@@ -34,7 +34,7 @@ def login_form(request):
                 print("User not found")
     form = AuthenticationForm()
     context = {"form": form, "form_title": "Login"}
-    return render(request, "form.html", context=context)
+    return render(request, "login.html", context=context)
 
 
 def logout_form(request):
