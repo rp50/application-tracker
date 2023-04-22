@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .models import Job
-
+from .forms import AddApplication
 
 
 def register_form(request):
@@ -43,6 +43,26 @@ def logout_form(request):
     if request.user.is_authenticated:
         logout(request)
     return redirect("/")
+
+@login_required
+def add_application(request):
+    if request.method == "POST":
+        form = AddApplication(request.POST)
+        if form.is_valid():
+            Job(
+                title=form.cleaned_data["title"],
+                company=form.cleaned_data["company"],
+                link=form.cleaned_data["link"],
+                date_applied=form.cleaned_data["date_applied"],
+                stage=form.cleaned_data["stage"],
+                stage_completed=form.cleaned_data["stage_completed"],
+                stage_deadline=form.cleaned_data["stage_deadline"],
+                applicant=request.user
+            ).save()
+        return redirect("/")
+    form = AddApplication()
+    context = {"form": form, "form_title": "Add Application"}
+    return render(request, template_name="form.html", context=context)
 
 @login_required
 def home(request):
