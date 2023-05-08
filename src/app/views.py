@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .models import Job
-from .forms import AddApplication
+from .forms import ApplicationForm
 
 
 def register_form(request):
@@ -44,10 +44,11 @@ def logout_form(request):
         logout(request)
     return redirect("/")
 
+
 @login_required
 def add_application(request):
     if request.method == "POST":
-        form = AddApplication(request.POST)
+        form = ApplicationForm(request.POST)
         if form.is_valid():
             Job(
                 title=form.cleaned_data["title"],
@@ -57,12 +58,27 @@ def add_application(request):
                 stage=form.cleaned_data["stage"],
                 stage_completed=form.cleaned_data["stage_completed"],
                 stage_deadline=form.cleaned_data["stage_deadline"],
-                applicant=request.user
+                applicant=request.user,
             ).save()
         return redirect("/")
-    form = AddApplication()
+    form = ApplicationForm()
     context = {"form": form, "form_title": "Add Application"}
     return render(request, template_name="form.html", context=context)
+
+
+@login_required()
+def edit_application(request, id):
+    job = Job.objects.get(id=id)
+    if request.method == "GET":
+        form = ApplicationForm(instance=job)
+        context = {"form": form}
+        return render(request, template_name="form.html", context=context)
+    elif request.method == "POST":
+        form = ApplicationForm(request.POST, instance=job)
+        if form.is_valid():
+            job = form.save()
+    return redirect("/")
+
 
 @login_required
 def home(request):
@@ -70,5 +86,5 @@ def home(request):
     user_jobs = Job.objects.filter(applicant=request.user.id)
     print(user_jobs)
     context = {"username": username, "user_jobs": user_jobs}
-    
+
     return render(request, "home.html", context=context)

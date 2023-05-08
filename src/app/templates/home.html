@@ -3,14 +3,15 @@
 {% block content %}
 
 <div class = "container py-5">
-    <h1>Hello, {{username}}!</h1>
-    <h3>Your applications</h3>
+    <h1>Hello {{username}}!</h1>
+    <h3>Your Applications</h3>
     <table class="table">
         <tr>
             <th>Job</th>
             <th>Company</th>
             <th>Status</th>
             <th>Deadline</th>
+            <th> </th>
         </tr>
         {% for job in user_jobs %}
         <tr>
@@ -18,9 +19,13 @@
             <td>{{ job.company }}</td>
             <td>{{ job.get_stage_display }}</td>
             <td>{{ job.stage_deadline }}</td>
+            <td>
+                <button class="btn btn-outline-primary" onclick="location.href = '{% url 'edit' job.id %}'">Edit</button> </td>
         </tr>
         {% endfor %}
     </table>
+
+    <button class="btn btn-outline-success" onclick="location.href = '{% url 'add' %}'">Add Application</button>
 </div>
 
 {% endblock %}
